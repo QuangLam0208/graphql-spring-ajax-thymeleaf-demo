@@ -1,0 +1,70 @@
+type User {
+    id: ID!
+    fullname: String
+    email: String
+    phone: String
+    categories: [Category]
+}
+
+type Category {
+    id: ID!
+    name: String
+    images: String
+    products: [Product]
+}
+
+type Product {
+    id: ID!
+    title: String
+    quantity: Int
+    desc: String
+    price: Float
+    userId: Int
+    category: Category
+}
+
+# Input Types cho CRUD
+input UserInput {
+    fullname: String
+    email: String
+    password: String
+    phone: String
+}
+
+input ProductInput {
+    title: String
+    quantity: Int
+    desc: String
+    price: Float
+    userId: Int
+    categoryId: Int
+}
+
+input CategoryInput {
+    name: String
+    images: String
+}
+
+# các Query (Đọc dữ liệu)
+type Query {
+    productsSortedByPrice: [Product]
+    
+    productsByCategory(categoryId: ID!): [Product]
+    
+    getAllUsers: [User]
+    getAllCategories: [Category]
+    getProductById(id: ID!): Product
+}
+
+# Mutation (CRUD)
+type Mutation {
+    createUser(user: UserInput): User
+    updateUser(id: ID!, user: UserInput): User
+    deleteUser(id: ID!): String
+
+    createCategory(category: CategoryInput): Category
+    deleteCategory(id: ID!): String
+
+    createProduct(product: ProductInput): Product
+    deleteProduct(id: ID!): String
+}

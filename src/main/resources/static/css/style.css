@@ -1,0 +1,38 @@
+
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; }
+.container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+/* Header & Tabs */
+.header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+h1 { margin: 0; color: #2c3e50; }
+
+.tab-header { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+.tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-size: 16px; font-weight: bold; color: #7f8c8d; transition: 0.3s; outline: none; }
+.tab-btn:hover { color: #3498db; background-color: #f9f9f9; }
+.tab-btn.active { color: #3498db; border-bottom: 3px solid #3498db; }
+
+.tab-content { display: none; animation: fadeIn 0.5s; }
+.tab-content.active { display: block; }
+
+/* Form & Table */
+.form-section { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #e9ecef; }
+.form-title { margin-top: 0; margin-bottom: 10px; font-size: 1.1em; color: #555; }
+.input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px; }
+input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background-color: #34495e; color: white; }
+tr:hover { background-color: #f1f1f1; }
+
+/* Buttons */
+.btn { padding: 8px 15px; border: none; cursor: pointer; border-radius: 4px; color: white; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px;}
+.btn-primary { background-color: #3498db; }
+.btn-success { background-color: #2ecc71; }
+.btn-danger { background-color: #e74c3c; }
+.btn-warning { background-color: #f39c12; }
+.btn-tool { background-color: #9b59b6; }
+.btn-tool:hover { background-color: #8e44ad; }
+.btn-sm { padding: 5px 10px; font-size: 0.9em; margin-right: 5px; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

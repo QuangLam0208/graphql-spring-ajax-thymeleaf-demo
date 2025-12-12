@@ -1,159 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>GraphQL Shop Demo</title>
+    <title>Hệ thống Quản lý GraphQL</title>
     <meta charset="UTF-8">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        h1, h2 { color: #2c3e50; text-align: center; }
-        
-        /* Button Style */
-        .btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.3s; color: white; text-decoration: none; display: inline-block;}
-        .btn-primary { background-color: #3498db; }
-        .btn-primary:hover { background-color: #2980b9; }
-        .btn-success { background-color: #2ecc71; }
-        .btn-success:hover { background-color: #27ae60; }
-        .btn-tool { background-color: #e74c3c; float: right; } /* Nút sang GraphiQL */
-        .btn-tool:hover { background-color: #c0392b; }
-
-        /* Table Style */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #34495e; color: white; }
-        tr:hover { background-color: #f1f1f1; }
-
-        /* Form Style */
-        .form-group { margin-bottom: 15px; display: flex; gap: 10px; }
-        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
-        
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
     <div class="container">
         <div class="header-actions">
-            <h1>🛍️ Quản Lý Sản Phẩm</h1>
-            <a href="/graphiql" target="_blank" class="btn btn-tool">🚀 Mở GraphiQL Tool</a>
+            <h1>Hệ thống Quản lý (CRUD Full)</h1>
+            <a href="/graphiql" target="_blank" class="btn btn-tool">Mở GraphiQL Tool</a>
         </div>
 
-        <hr>
-
-        <h3>➕ Thêm sản phẩm mới (Mutation Demo)</h3>
-        <div class="form-group">
-            <input type="text" id="newTitle" placeholder="Tên sản phẩm (VD: iPhone 16)" />
-            <input type="number" id="newPrice" placeholder="Giá (VD: 20000000)" />
-            <input type="number" id="catId" placeholder="ID Danh mục (VD: 1)" style="max-width: 150px;"/>
-            <button class="btn btn-success" onclick="createProduct()">Lưu Ngay</button>
+        <div class="tab-header">
+            <button class="tab-btn active" onclick="openTab('products')">Sản Phẩm</button>
+            <button class="tab-btn" onclick="openTab('categories')">Danh Mục</button>
+            <button class="tab-btn" onclick="openTab('users')">Người Dùng</button>
         </div>
 
-        <hr>
-
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>📋 Danh sách sản phẩm (Giá tăng dần)</h3>
-            <button class="btn btn-primary" onclick="loadProducts()">🔄 Tải Dữ Liệu</button>
+        <div id="products" class="tab-content active">
+            <div class="form-section">
+                <h3 class="form-title" id="p-form-title">Thêm Sản Phẩm Mới</h3>
+                <input type="hidden" id="p-id">
+                <div class="input-group">
+                    <input type="text" id="p-title" placeholder="Tên sản phẩm">
+                    <input type="number" id="p-price" placeholder="Giá">
+                    <input type="number" id="p-qty" placeholder="Số lượng" value="10">
+                    <input type="text" id="p-desc" placeholder="Mô tả">
+                    <input type="number" id="p-catId" placeholder="ID Danh mục">
+                    <input type="number" id="p-userId" placeholder="ID Người bán" value="1">
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn btn-warning" onclick="resetProductForm()" style="display:none;" id="p-cancel-btn">Hủy sửa</button>
+                    <button class="btn btn-success" onclick="saveProduct()">Lưu Sản Phẩm</button>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="loadProducts()">Tải danh sách</button>
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Tên</th><th>Giá</th><th>Danh mục</th><th>Thao tác</th></tr>
+                </thead>
+                <tbody id="p-table"></tbody>
+            </table>
         </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50px;">ID</th>
-                    <th>Tên SP</th>
-                    <th>Giá</th>
-                    <th>Danh mục</th>
-                </tr>
-            </thead>
-            <tbody id="productTable">
-                <tr><td colspan="4" style="text-align:center;">Vui lòng bấm nút tải dữ liệu...</td></tr>
-            </tbody>
-        </table>
+
+        <div id="categories" class="tab-content">
+            <div class="form-section">
+                <h3 class="form-title" id="c-form-title">Thêm Danh Mục</h3>
+                <input type="hidden" id="c-id">
+                <div class="input-group">
+                    <input type="text" id="c-name" placeholder="Tên danh mục (VD: Laptop)">
+                    <input type="text" id="c-images" placeholder="URL Ảnh">
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn btn-warning" onclick="resetCategoryForm()" style="display:none;" id="c-cancel-btn">Hủy sửa</button>
+                    <button class="btn btn-success" onclick="saveCategory()">Lưu Danh Mục</button>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="loadCategories()">Tải danh sách</button>
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Tên danh mục</th><th>Ảnh</th><th>Thao tác</th></tr>
+                </thead>
+                <tbody id="c-table"></tbody>
+            </table>
+        </div>
+
+        <div id="users" class="tab-content">
+            <div class="form-section">
+                <h3 class="form-title" id="u-form-title">Thêm Người Dùng</h3>
+                <input type="hidden" id="u-id">
+                <div class="input-group">
+                    <input type="text" id="u-fullname" placeholder="Họ và tên">
+                    <input type="email" id="u-email" placeholder="Email">
+                    <input type="text" id="u-phone" placeholder="Số điện thoại">
+                    <input type="password" id="u-pass" placeholder="Mật khẩu">
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn btn-warning" onclick="resetUserForm()" style="display:none;" id="u-cancel-btn">Hủy sửa</button>
+                    <button class="btn btn-success" onclick="saveUser()">Lưu User</button>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="loadUsers()">Tải danh sách</button>
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Thao tác</th></tr>
+                </thead>
+                <tbody id="u-table"></tbody>
+            </table>
+        </div>
     </div>
 
-    <script>
-        // 1. Hàm Load danh sách (Query)
-        async function loadProducts() {
-            const query = `
-                query {
-                    productsSortedByPrice {
-                        id
-                        title
-                        price
-                        category { name }
-                    }
-                }
-            `;
-            await fetchGraphQL(query, (data) => {
-                const products = data.productsSortedByPrice;
-                let html = '';
-                products.forEach(p => {
-                    html += `
-                        <tr>
-                            <td>${p.id}</td>
-                            <td>${p.title}</td>
-                            <td>${p.price.toLocaleString()} đ</td>
-                            <td>${p.category ? p.category.name : '<span style="color:gray">Chưa có</span>'}</td>
-                        </tr>
-                    `;
-                });
-                document.getElementById('productTable').innerHTML = html;
-            });
-        }
-
-        // 2. Hàm Thêm mới (Mutation)
-        async function createProduct() {
-            const title = document.getElementById('newTitle').value;
-            const price = parseFloat(document.getElementById('newPrice').value);
-            const catId = parseInt(document.getElementById('catId').value);
-
-            if(!title || !price) { alert("Vui lòng nhập tên và giá!"); return; }
-
-            // Cấu trúc Mutation gọi API
-            const mutation = `
-                mutation {
-                    createProduct(product: {
-                        title: "${title}",
-                        price: ${price},
-                        quantity: 1,
-                        desc: "Mô tả mẫu từ Web",
-                        userId: 1,
-                        categoryId: ${catId || 1}
-                    }) {
-                        id
-                        title
-                    }
-                }
-            `;
-
-            await fetchGraphQL(mutation, (data) => {
-                alert("✅ Đã thêm thành công sản phẩm: " + data.createProduct.title);
-                loadProducts(); // Tải lại danh sách ngay sau khi thêm
-                document.getElementById('newTitle').value = "";
-                document.getElementById('newPrice').value = "";
-            });
-        }
-
-        // Hàm gọi API chung để đỡ viết lại code fetch
-        async function fetchGraphQL(queryStr, callback) {
-            try {
-                const response = await fetch('/graphql', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: queryStr })
-                });
-                const result = await response.json();
-                if (result.errors) {
-                    console.error(result.errors);
-                    alert("Lỗi GraphQL: " + result.errors[0].message);
-                } else {
-                    callback(result.data);
-                }
-            } catch (error) {
-                console.error('Lỗi mạng:', error);
-                alert("Không kết nối được server!");
-            }
-        }
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

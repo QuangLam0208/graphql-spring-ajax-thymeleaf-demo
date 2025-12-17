@@ -3,6 +3,7 @@ type User {
     fullname: String
     email: String
     phone: String
+    role: String       
     categories: [Category]
 }
 
@@ -29,6 +30,7 @@ input UserInput {
     email: String
     password: String
     phone: String
+    role: String         
 }
 
 input ProductInput {
@@ -45,12 +47,10 @@ input CategoryInput {
     images: String
 }
 
-# các Query (Đọc dữ liệu)
+# Các Query
 type Query {
     productsSortedByPrice: [Product]
-    
     productsByCategory(categoryId: ID!): [Product]
-    
     getAllUsers: [User]
     getAllCategories: [Category]
     getProductById(id: ID!): Product

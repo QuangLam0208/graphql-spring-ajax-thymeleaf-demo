@@ -30,7 +30,7 @@ public class Product {
     private BigDecimal price;
     
     @Column(name = "userid")
-    private Integer userId; // Giữ simple ID cho User sở hữu
+    private Integer userId;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

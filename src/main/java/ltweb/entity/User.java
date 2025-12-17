@@ -1,15 +1,7 @@
 package ltweb.entity;
 
 import java.util.List;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,11 +15,13 @@ public class User {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
     private String fullname;
     private String email;
     private String password;
     private String phone;
-
+    private String role;
+    
     @ManyToMany
     @JoinTable(
         name = "User_Category",

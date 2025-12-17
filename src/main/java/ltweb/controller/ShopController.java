@@ -9,6 +9,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import jakarta.validation.Valid;
 import ltweb.entity.Category;
 import ltweb.entity.Product;
 import ltweb.entity.User;
@@ -26,38 +27,29 @@ public class ShopController {
     @Autowired private CategoryRepository categoryRepo;
     @Autowired private UserRepository userRepo;
 
-    // ================= QUERY (Lấy dữ liệu) =================
-
-    // 1. Lấy tất cả product sắp xếp theo giá tăng dần
     @QueryMapping
     public List<Product> productsSortedByPrice() {
         return productRepo.findAllByOrderByPriceAsc();
     }
 
-    // 2. Lấy tất cả product của 01 category
     @QueryMapping
     public List<Product> productsByCategory(@Argument Integer categoryId) {
         return productRepo.findByCategoryId(categoryId);
     }
     
-    // 3. Lấy chi tiết 1 Product theo ID
     @QueryMapping
     public Optional<Product> getProductById(@Argument Integer id) {
         return productRepo.findById(id);
     }
 
-    // 4. Lấy danh sách User và Category
     @QueryMapping
     public List<User> getAllUsers() { return userRepo.findAll(); }
     
     @QueryMapping
     public List<Category> getAllCategories() { return categoryRepo.findAll(); }
     
-    
-    // ================= MUTATION (CRUD Product) =================
-    
     @MutationMapping
-    public Product createProduct(@Argument ProductInput product) {
+    public Product createProduct(@Argument @Valid ProductInput product) { // Thêm @Valid
         Product p = new Product();
         p.setTitle(product.getTitle());
         p.setPrice(product.getPrice());
@@ -65,12 +57,10 @@ public class ShopController {
         p.setDesc(product.getDesc());
         p.setUserId(product.getUserId());
         
-        // Liên kết với Category
         if (product.getCategoryId() != null) {
             Category c = categoryRepo.findById(product.getCategoryId()).orElse(null);
             p.setCategory(c);
         }
-        
         return productRepo.save(p);
     }
     
@@ -90,7 +80,7 @@ public class ShopController {
             }
             return productRepo.save(p);
         }
-        return null; // Hoặc ném Exception tùy logic
+        return null;
     }
 
     @MutationMapping
@@ -102,15 +92,14 @@ public class ShopController {
         return "Product not found";
     }
 
-    // ================= MUTATION (CRUD User) =================
-
     @MutationMapping
-    public User createUser(@Argument UserInput user) {
+    public User createUser(@Argument @Valid UserInput user) {
         User u = new User();
         u.setFullname(user.getFullname());
         u.setEmail(user.getEmail());
         u.setPassword(user.getPassword());
         u.setPhone(user.getPhone());
+        u.setRole(user.getRole() != null ? user.getRole() : "USER"); 
         return userRepo.save(u);
     }
 
@@ -120,7 +109,6 @@ public class ShopController {
         if (u != null) {
             if(user.getFullname() != null) u.setFullname(user.getFullname());
             if(user.getEmail() != null) u.setEmail(user.getEmail());
-            // password nên mã hóa trước khi lưu thực tế
             if(user.getPassword() != null) u.setPassword(user.getPassword());
             if(user.getPhone() != null) u.setPhone(user.getPhone());
             return userRepo.save(u);
@@ -137,10 +125,8 @@ public class ShopController {
         return "User not found";
     }
 
-    // ================= MUTATION (CRUD Category) =================
-
     @MutationMapping
-    public Category createCategory(@Argument CategoryInput category) {
+    public Category createCategory(@Argument @Valid CategoryInput category) {
         Category c = new Category();
         c.setName(category.getName());
         c.setImages(category.getImages());
@@ -160,8 +146,6 @@ public class ShopController {
 
     @MutationMapping
     public String deleteCategory(@Argument Integer id) {
-        // Lưu ý: Cần xử lý khóa ngoại nếu Category đang có Product
-        // Ở đây xóa đơn giản
         if(categoryRepo.existsById(id)) {
             categoryRepo.deleteById(id);
             return "Deleted category with id: " + id;

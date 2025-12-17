@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trang Chủ User</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <h1>Chào mừng User!</h1>
+            <a href="/logout" class="btn btn-danger">Đăng xuất</a>
+        </div>
+        <h3>Danh sách sản phẩm (Read Only)</h3>
+        <button class="btn btn-primary" onclick="loadProducts()">Tải danh sách</button>
+        <table>
+            <thead><tr><th>ID</th><th>Tên</th><th>Giá</th><th>Mô tả</th></tr></thead>
+            <tbody id="p-table"></tbody>
+        </table>
+    </div>
+    <script>
+        // Chỉ lấy logic load sản phẩm, bỏ các hàm sửa/xóa
+        const API_URL = '/graphql';
+        async function fetchGraphQL(query) {
+            const res = await fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query })
+            });
+            return (await res.json()).data;
+        }
+        async function loadProducts() {
+            const query = `query { productsSortedByPrice { id title price desc } }`;
+            const data = await fetchGraphQL(query);
+            if (!data) return;
+            document.getElementById('p-table').innerHTML = data.productsSortedByPrice.map(p => `
+                <tr><td>${p.id}</td><td>${p.title}</td><td>${p.price}</td><td>${p.desc}</td></tr>
+            `).join('');
+        }
+        loadProducts();
+    </script>
+</body>
+</html>
